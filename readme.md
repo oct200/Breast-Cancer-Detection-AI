@@ -77,3 +77,4 @@ Setul de date prezintă o distribuție dezechilibrată, în care numărul imagin
 Clasificare:
 	Imagini fără tumori (țesut normal): 197.721
 	Imagini cu tumori (IDC prezente): 78.676
+
