@@ -65,7 +65,7 @@ Setul de date oferă imagini histopatologice digitale, utilizate pentru analiza 
 	Date semi-structurate (prin etichete): fiecare imagine este asociată cu o clasă, ceea ce permite sarcini de învățare supervizată
 
 ##  Câte date avem?
-Setul de date conține aproximativ ~280.000 imagini histopatologice digitale, obținute de la ~280 de pacienți. Fiecare imagine are dimensiunea de 96x96 pixeli și este etichetată pentru a indica prezența sau absența cancerului mamar (carcinom ductal invaziv - IDC).
+Setul de date conține aproximativ ~280.000 imagini histopatologice digitale, obținute de la ~280 de pacienți. Fiecare imagine are dimensiunea de 50x50 pixeli și este etichetată pentru a indica prezența sau absența cancerului mamar (carcinom ductal invaziv - IDC).
 
 	Număr total de imagini: 276.397
 
