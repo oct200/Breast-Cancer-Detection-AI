@@ -1,11 +1,11 @@
 #  Definirea problemei
 
 ##  Ce se dă?
- Un set de imagini mamografice, fiecare însoțită de o etichetă ce indică natura tumorii. În plus, pot fi disponibile și informații adiționale precum localizarea exactă a formațiunii.
+Un set de imagini mamografice, fiecare însoțită de o etichetă ce indică natura tumorii. În plus, pot fi disponibile și informații adiționale precum localizarea exactă a formațiunii.
 
- Acces la modele de inteligență artificială din familia Transformer, pre-antrenate (ex: Vision Transformer – ViT), care pot fi adaptate ușor pentru sarcini specifice din domeniul imagisticii medicale.
+Acces la modele de inteligență artificială din familia Transformer, pre-antrenate (ex: Vision Transformer – ViT), care pot fi adaptate ușor pentru sarcini specifice din domeniul imagisticii medicale.
 
- Un ecosistem software complet, construit în Python, cu librării moderne precum PyTorch și TensorFlow, plus unelte pentru prelucrarea imaginilor și evaluarea performanței modelelor AI.
+Un ecosistem software complet, construit în Python, cu librării moderne precum PyTorch și TensorFlow, plus unelte pentru prelucrarea imaginilor și evaluarea performanței modelelor AI.
 
 ##  Ce se cere?
 Realizarea unui sistem de inteligență artificială capabil să analizeze automat imagini mamografice și să clasifice tumorile, contribuind la detectarea precoce a cancerului mamar.
@@ -78,3 +78,100 @@ Clasificare:
 	Imagini fără tumori (țesut normal): 197.721
 	Imagini cu tumori (IDC prezente): 78.676
 
+# Dezvoltarea unui model de AI si evaluarea performantei
+
+## Ce arhitectura are modelul de AI?
+Modelul de inteligență artificială utilizat este bazat pe arhitectura Transformer, care este potrivită pentru prelucrarea secvențială a datelor și este frecvent utilizată în sarcini precum clasificarea de text, analiza imaginilor sau generarea de limbaj natural. Această arhitectură folosește mecanisme de self-attention pentru a capta relațiile dintre elementele unei secvențe și permite procesarea în paralel a datelor.
+
+## Ce setup (parametrii si hiper-parametrii) se folosesc pentru antrenarea si validarea modelului de AI?
+Pentru antrenarea modelului Transformer, au fost folosiți următorii parametri și hiperparametri:
+
+	1. Hiperparametri (configurați înainte de antrenare și care influențează procesul de învățare):
+Funcția de pierdere (loss function): CrossEntropyLoss – potrivită pentru sarcini de clasificare multi-clasă.
+Optimizator: Adam – un optimizator adaptiv eficient, configurat cu rata de învățare.
+Learning rate (LR): valoarea variabilei LR – controlează pasul de actualizare al greutăților.
+Numărul de epoci (EPOCHS): valoarea variabilei EPOCHS – numărul de treceri complete prin setul de date de antrenare.
+Batch size (dimensiunea minibatch-ului): BATCH_SIZE – numărul de exemple folosite la fiecare pas de antrenare.
+Sampler: sampler – controlează ordinea sau eșantionarea datelor din train_loader.
+
+	2. Parametri dinamici monitorizați în timpul antrenării:
+Loss: media pierderii pe întregul set de antrenare într-o epocă.
+Accuracy: proporția de predicții corecte într-o epocă.
+
+## Ce metrici de performanta se monitorizeaza?
+Pentru evaluarea performanței modelului, sunt monitorizate următoarele metrice clasice de clasificare:
+
+Accuracy – proporția totală de predicții corecte din toate exemplele;
+Precision – proporția de exemple corect clasificate ca pozitive din totalul celor clasificate ca pozitive (utilă mai ales când false positive-urile sunt costisitoare);
+Recall – proporția de exemple corect clasificate ca pozitive din totalul real al claselor pozitive (important când false negative-urile sunt critice);
+Confusion matrix – o reprezentare tabelară care arată distribuția exactă a clasificărilor corecte și greșite pentru fiecare clasă, oferind o imagine de ansamblu asupra tipurilor de erori făcute de model.
+
+# Propuneri de imbunatatiri
+### Augmentare a imaginilor
+Ajută la generalizare, mai ales când ai dezechilibru de clase.
+
+	train_transform = transforms.Compose([
+		transforms.RandomHorizontalFlip(),
+		transforms.RandomRotation(10),
+		transforms.ColorJitter(brightness=0.1, contrast=0.1),
+		transforms.Resize((224, 224)),
+		transforms.ToTensor(),
+		transforms.Normalize([0.5]*3, [0.5]*3)
+	])
+
+### Îmbunătățirea balansului între clase
+Focal Loss în loc de CrossEntropyLoss, mai ales dacă avem clase dezechilibrate:
+
+	class FocalLoss(nn.Module):
+		def __init__(self, gamma=2.0):
+			super().__init__()
+			self.gamma = gamma
+			self.ce = nn.CrossEntropyLoss()
+
+		def forward(self, input, target):
+			logp = self.ce(input, target)
+			p = torch.exp(-logp)
+			loss = (1 - p) ** self.gamma * logp
+			return loss.mean()
+
+	criterion = FocalLoss()
+
+### Fine-tuning complet al modelului ViT
+Deblocăm toate layerele, nu doar capul de clasificare:
+
+	for param in model.parameters():
+		param.requires_grad = True
+
+### Learning rate scheduling
+Learning rate scheduling este o tehnică prin care rata de învățare a modelului este ajustată automat pe parcursul antrenării, pentru a îmbunătăți convergența și performanța generală. Aceasta permite modelului să învețe mai rapid în etapele inițiale și mai fin în etapele finale, reducând riscul de overfitting.
+
+### Validare și early stopping
+Păstrăm modelul cu cele mai bune performanțe:
+
+	best_acc = 0
+	for epoch in range(EPOCHS):
+		...
+		if val_acc > best_acc:
+			best_acc = val_acc
+			torch.save(model.state_dict(), "best_model.pt")
+
+### Postprocesare / Threshold customizat
+În loc de argmax, folosim un prag adaptiv:
+
+	probs = torch.softmax(output, dim=1)
+	if probs[0, 1] > 0.7:
+		print("Tumor detected")
+	else:
+		print("Likely normal")
+
+### Evaluare cu matrice de confuzie, AUC, F1
+Mai multe metrice pot ghida îmbunătățirile:
+
+	from sklearn.metrics import classification_report, confusion_matrix
+	
+	y_true = [...]
+	y_pred = [...]
+	print(classification_report(y_true, y_pred, target_names=['no tumor', 'tumor']))
+
+### Transfer learning de la modele antrenate pe imagini medicale (ex: ImageNet nu e ideal)
+Căutăm modele pre-antrenate pe seturi medicale (ex: BioViT sau Google MedViT).
