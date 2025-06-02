@@ -11,7 +11,7 @@ def incarcare_model():
 
     model = timm.create_model('vit_small_patch16_224', pretrained=False, num_classes=2)
 
-    model.load_state_dict(torch.load('mamografii.pth', map_location=torch.device("cuda" if torch.cuda.is_available() else "cpu")))
+    model.load_state_dict(torch.load('mamografiiPro.pth', map_location=torch.device("cuda" if torch.cuda.is_available() else "cpu")))
     model.to(DEVICE)
     print("model loaded")
     return model
