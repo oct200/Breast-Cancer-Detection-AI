@@ -3,7 +3,7 @@
 ##  Ce se dă?
 Un set de imagini mamografice, fiecare însoțită de o etichetă ce indică natura tumorii. În plus, pot fi disponibile și informații adiționale precum localizarea exactă a formațiunii.
 
-Acces la modele de inteligență artificială din familia Transformer, pre-antrenate (ex: Vision Transformer – ViT), care pot fi adaptate ușor pentru sarcini specifice din domeniul imagisticii medicale.
+Acces la modele de inteligență artificială din familia Transformer, care pot fi adaptate ușor pentru sarcini specifice din domeniul imagisticii medicale.
 
 Un ecosistem software complet, construit în Python, cu librării moderne precum PyTorch și TensorFlow, plus unelte pentru prelucrarea imaginilor și evaluarea performanței modelelor AI.
 
@@ -13,8 +13,6 @@ Realizarea unui sistem de inteligență artificială capabil să analizeze autom
 Obiective specifice:
 
  Curățarea și preprocesarea imaginilor pentru a le face compatibile cu arhitecturile de rețele neuronale.
-
- Selectarea unui model Transformer potrivit și adaptarea acestuia (fine-tuning) pe setul de date furnizat.
 
  Antrenarea modelului și evaluarea performanței folosind metrici clinice esențiale: acuratețe, precizie, sensibilitate, specificitate și AUC-ROC.
 
